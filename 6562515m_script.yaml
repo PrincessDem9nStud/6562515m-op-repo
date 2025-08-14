@@ -1,0 +1,38 @@
+#description: >
+#Ensures Apache2 is installed and running, manages directories,
+#clones a Git repo, and replaces index.html on the target container.
+
+parameters:
+  targets:
+    type: TargetSpec
+
+steps:
+  - name: ensure_apache_installed
+    command: |
+      puppet resource package apache2 ensure=installed
+    targets: $targets
+
+  - name: ensure_apache_running
+    command: |
+      puppet resource service apache2 ensure=running enable=true
+    targets: $targets
+
+  - name: remove_old_directory
+    command: |
+      rm -rf /operate/6562515m
+    targets: $targets
+
+  - name: create_new_directory
+    command: |
+      mkdir -p /operate/6562515m
+    targets: $targets
+
+  - name: clone_git_repo
+    command: |
+      git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git /operate/6562515m
+    targets: $targets
+
+  - name: replace_index_html
+    command: |
+      cp /operate/6562515m/index-op-6562515m.html /var/www/html/index.html
+    targets: $targets
