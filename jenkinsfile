@@ -1,0 +1,36 @@
+pipeline {
+      agent any
+      stages {
+          stage('One') {
+          steps {
+            echo 'Continue from previous phase: Ready to deploy next environment.'
+          }
+          }
+          stage('Two') {
+          steps {
+            echo 'Do you want to update to UAT container?'
+          }
+          }
+          stage('Three') {
+          steps {
+               echo 'UAT container updated'
+          }
+          }
+          stage('Four') {
+          steps {
+            echo 'Do you want to deploy to Production container?'
+                
+          }
+          }
+          stage('Five') {
+          steps {
+                 echo 'Production container updated'
+          }
+          }
+          stage('Completed updating Operation') {
+          steps {
+            echo 'Completed updating to Production Container'
+          }
+          }
+      }
+}
