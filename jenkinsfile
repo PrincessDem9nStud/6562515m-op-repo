@@ -6,8 +6,6 @@ pipeline {
       	choices: ['Prod Server', 'QA Server'],
       	description: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
     	)
-  		}
-	   parameters {
        choice(
        name: 'RELEASE_TO',
        choices: ['Release', 'Rollback'],
