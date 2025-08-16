@@ -2,12 +2,12 @@ pipeline {
       agent any
 		parameters {
     	choice(
-      	name: 'ROLL_OUT S3',
+      	name: 'ROLL_OUT_S3',
       	choices: ['Prod Server', 'QA Server'],
       	description: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
     	)
        choice(
-       name: 'RELEASE_TO S6',
+       name: 'RELEASE_TO_S6',
        choices: ['Release', 'Rollback'],
        description: 'Proceed to release Prod web server to production or roll back?'
        )
@@ -31,7 +31,7 @@ pipeline {
           steps {
 			//Set options, choose between proceed to roll out PROD or roll back to QA
 			//if rollback, must execute rollback by using the qa-bkup-image
-			echo "selected action: ${params.ROLL_OUT}"
+			echo "selected action: ${params.ROLL_OUT_S3}"
           }
           }
           stage('Four') {
@@ -51,7 +51,7 @@ pipeline {
           steps {
 			//Set options, choose between proceed to release prod web server or roll back
 			//if rollback, must execute rollback by using the prod-bkup-image
-			echo "selected action: ${params.RELEASE_TO}"
+			echo "selected action: ${params.RELEASE_TO_S6}"
           }
           }
           stage('Seven - Last') {
