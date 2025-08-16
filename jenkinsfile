@@ -2,12 +2,12 @@ pipeline {
       agent any
 		parameters {
     	choice(
-      	name: 'ROLL_OUT',
+      	name: 'ROLL_OUT S3',
       	choices: ['Prod Server', 'QA Server'],
       	description: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
     	)
        choice(
-       name: 'RELEASE_TO',
+       name: 'RELEASE_TO S6',
        choices: ['Release', 'Rollback'],
        description: 'Proceed to release Prod web server to production or roll back?'
        )
