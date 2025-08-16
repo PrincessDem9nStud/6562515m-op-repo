@@ -3,7 +3,7 @@ pipeline {
       stages {
           stage('One') {
           steps {
-            //remove qa backup image then create a new image called qa-bkup-image
+         //remove qa backup image then create a new image called qa-bkup-image
 		//update the qa server by doing a bolt script run 
 		//to update QA web server with the new html format (req#3)
 		echo 'Op-6562515m-S1: QA web server is backup and updated'
@@ -11,7 +11,8 @@ pipeline {
           }
           stage('Two') {
           steps {
-            echo 'Do you want to update to UAT container?'
+		  //execute the curl test (req#4)
+		 echo "Op-6562515m-S2: Checking on whether QA server is running after update"       
           }
           }
           stage('Three') {
