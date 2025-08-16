@@ -1,5 +1,19 @@
 pipeline {
       agent any
+		parameters {
+    	choice(
+      	name: 'ROLL_OUT',
+      	choices: ['Prod Server', 'QA Server'],
+      	description: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
+    	)
+  		}
+	   parameters {
+       choice(
+       name: 'RELEASE_TO',
+       choices: ['Release', 'Rollback'],
+       description: 'Proceed to release Prod web server to production or roll back?'
+       )
+       }	
       stages {
           stage('One') {
           steps {
@@ -19,8 +33,7 @@ pipeline {
           steps {
 			//Set options, choose between proceed to roll out PROD or roll back to QA
 			//if rollback, must execute rollback by using the qa-bkup-image
-			input('Proceed to Roll out to Prod Server or Roll Back to QA Server?', ok: "Prod Server", cancel: "QA Server")
-            echo 'rollback stage'
+			echo 'selected action: ${params.ROLL_OUT}"
           }
           }
           stage('Four') {
@@ -36,9 +49,17 @@ pipeline {
 			echo 'Op-6562515m-S5: Checking on whether PROD server is running after update'
           }
           }
-          stage('Completed updating Operation') {
+		  stage('Six') {
           steps {
-            echo 'Completed updating to Production Container'
+			//Set options, choose between proceed to release prod web server or roll back
+			//if rollback, must execute rollback by using the prod-bkup-image
+			echo 'selected action: ${params.RELEASE_TO}"
+          }
+          }
+          stage('Seven - Last') {
+          steps {
+			//last stage
+            echo 'LAST Prod Web server is monitored and ready to serve'
           }
           }
       }
