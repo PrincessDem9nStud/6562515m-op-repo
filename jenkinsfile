@@ -33,7 +33,7 @@ pipeline {
           steps {
 			//Set options, choose between proceed to roll out PROD or roll back to QA
 			//if rollback, must execute rollback by using the qa-bkup-image
-			echo 'selected action: ${params.ROLL_OUT}"
+			echo "selected action: ${params.ROLL_OUT}"
           }
           }
           stage('Four') {
@@ -53,7 +53,7 @@ pipeline {
           steps {
 			//Set options, choose between proceed to release prod web server or roll back
 			//if rollback, must execute rollback by using the prod-bkup-image
-			echo 'selected action: ${params.RELEASE_TO}"
+			echo "selected action: ${params.RELEASE_TO}"
           }
           }
           stage('Seven - Last') {
