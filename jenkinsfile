@@ -3,32 +3,37 @@ pipeline {
       stages {
           stage('One') {
           steps {
-         //remove qa backup image then create a new image called qa-bkup-image
-		//update the qa server by doing a bolt script run 
-		//to update QA web server with the new html format (req#3)
-		echo 'Op-6562515m-S1: QA web server is backup and updated'
+         	//remove qa backup image then create a new image called qa-bkup-image
+			//update the qa server by doing a bolt script run 
+			//to update QA web server with the new html format (req#3)
+			echo 'Op-6562515m-S1: QA web server is backup and updated'
           }
           }
           stage('Two') {
           steps {
-		  //execute the curl test (req#4)
-		 echo "Op-6562515m-S2: Checking on whether QA server is running after update"       
+			//execute the curl test (req#4)
+		 	echo "Op-6562515m-S2: Checking on whether QA server is running after update"       
           }
           }
           stage('Three') {
           steps {
-               echo 'UAT container updated'
+			//Set options, choose between proceed to roll out PROD or roll back to QA
+			//if rollback, must execute rollback by using the qa-bkup-image
+			input('Proceed to Roll out to Prod Server or Roll Back to QA Server?', ok: "Prod Server", cancel: "QA Server")
+            echo 'rollback stage'
           }
           }
           stage('Four') {
           steps {
-            echo 'Do you want to deploy to Production container?'
-                
+			//remove any prod backup image and create a new image called prod-bkup-image
+			//update prod server by executing bolt run just like stage 1
+			echo "Op-6562515m-S4: Prod web server is backup and updated"        
           }
           }
           stage('Five') {
           steps {
-                 echo 'Production container updated'
+			//execute the curl test (req#4)
+			echo 'Op-6562515m-S5: Checking on whether PROD server is running after update'
           }
           }
           stage('Completed updating Operation') {
