@@ -17,7 +17,7 @@ pipeline {
                  puppet resource file /tmp/operate ensure=absent force=true;
                  puppet resource file /tmp/operate ensure=directory;
 	               cd /tmp/operate;
-	               git clone https://PrincessDem9n@github.com/6562515m-op-repo.git;
+	               git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git;
                  targets=puppetclient.localdomain;
                  locate_script='/tmp/operate/script_to_run';
                  bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root;
