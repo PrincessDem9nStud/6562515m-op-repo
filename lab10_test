@@ -13,7 +13,7 @@ pipeline {
           }
           stage('Three') {
           steps {
-                 sh "'#!/bin/bash
+                 sh '''#!/bin/bash
 				
 				#clean and recreate directory
                  puppet resource file /tmp/operate ensure=absent force=true;
@@ -29,7 +29,7 @@ pipeline {
 
 				#run Bolt script
                  bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
-				'"
+				'''
 				echo "UAT container updated"
           }
           }
