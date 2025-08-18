@@ -23,7 +23,7 @@ pipeline {
 
 				#clone repo
 	             cd /tmp/operate
-	             sudo git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git
+	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git
                  
 				#define varialbes
 				 targets=puppetclient.localdomain
