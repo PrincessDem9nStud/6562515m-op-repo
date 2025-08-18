@@ -43,7 +43,6 @@ pipeline {
           stage('Five') {
           steps {
 			script { 
-			#def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
 			v1 = input (
 			message: 'Action',
 			parameters: [choice(name:'',choices: ['Proceed', 'Rollback to QA'])]
