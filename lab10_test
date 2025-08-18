@@ -43,7 +43,7 @@ pipeline {
           stage('Five') {
           steps {
 			script { 
-			def result = sh(script: 'cat /tmp/operate/result-01', returnStdout: true).trim()
+			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
 			if (result == 'HTTP/1.1 200 OK') {
  				echo "proceed to roll out to prod server"
                 } else {
