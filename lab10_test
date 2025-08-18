@@ -44,20 +44,14 @@ pipeline {
           steps {
 			script { 
 			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
-			def v1 = input(
-        		message: 'Proceed with rollout?',
-        		parameters: [ 
-					choice(
-                	name: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?',
-					choices: ['Prod Server', 'QA Server', 'Abort']
-                	)
-        			]			
+				def v1 = input(
+        		message: 'Proceed with rollout to Prod server or Roll back?',
+        		parameters: [choice(name:' ', choices: ['Prod Server', 'QA Server'])]			
     				)		 		
 					if ((result == 'HTTP/1.1 200 OK') && (v1 == 'Prod Server')) {
 						echo "proceed to roll out to prod server"
 					} else if (v1 == 'QA Server') {
 						echo "roll back to QA server"
-					} else if (v1 == 'Abort') {
 						error("Aborting")
 					}			
           }
