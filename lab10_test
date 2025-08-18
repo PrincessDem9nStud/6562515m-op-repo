@@ -1,5 +1,12 @@
 pipeline {
       agent any
+	  parameters {
+	  choice(
+      	name: 'ROLL_OUT_S3',
+      	choices: ['Prod Server', 'QA Server', 'Abort'],
+      	description: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
+    	)
+		}
       stages {
           stage('One') {
           steps {
@@ -43,15 +50,14 @@ pipeline {
           stage('Five') {
           steps {
 			script { 
-			v1 = input (
-			message: 'Action',
-			parameters: [choice(name:'',choices: ['Proceed', 'Rollback to QA'])]
-			) 				
-			if(v1=='Proceed'){	
-			echo "proceed to roll out to prod server"
-            } else if(v1=='Rollback'){ 
-				echo "roll back to QA server"
-                }
+			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
+				if ((result == 'HTTP/1.1 200 OK') && (params.ROLL_OUT_S3 == 'Prod Server')) {
+        			echo "proceed to roll out to prod server"
+    			} else if (params.ROLL_OUT_S3 == 'QA Server') {
+        			echo "roll back to QA server"
+    			} else if (params.ROLL_OUT_S3 == 'Abort') {
+        			error("QA server fails after update and is rolled back")
+    			}			
           }
 		  }
 		  }
