@@ -38,7 +38,7 @@ pipeline {
             sh '''#!/bin/bash
 		    #define varibles
 			targets=puppetclient33.localdomain;
-			curls='curl -ls http://localhost:3333 I head -n -l > /tmp/operate/result-file';
+			curls='curl -Is http://localhost:3333 | head -n -l > /tmp/operate/result-file';
 			#run bolt task
 			bolt task run $curls -t $targets -u svradm -p user123 --no-host-key-check --run-as root
             '''    
