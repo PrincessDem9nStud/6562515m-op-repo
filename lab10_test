@@ -40,7 +40,7 @@ pipeline {
 			  }
           }
           }
-          stage('Five') {
+          stage('Five - choice') {
           steps {
 			script { 
 			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
@@ -57,7 +57,7 @@ pipeline {
 						echo "proceed to roll out to prod server"
 					} else if (v1 == 'QA Server') {
 						echo "roll back to QA server"
-					} else {
+					} else if (v1 == 'Abort') {
 						error("Aborting")
 					}			
           }
