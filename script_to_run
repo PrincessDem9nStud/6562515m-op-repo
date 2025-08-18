@@ -7,4 +7,4 @@ puppet resource file /tmp/operate ensure=absent force=true
 puppet resource file /tmp/operate ensure=directory
 cd /tmp/operate
 git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git
-cp -p /tmp/operate/index.html /var/www/html
+cp -p /tmp/operate/6562515m-op-repo/index.html /var/www/html
