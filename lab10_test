@@ -40,8 +40,7 @@ pipeline {
 				#clean and recreate directory
                  puppet resource file /tmp/operate ensure=absent force=true;
                  puppet resource file /tmp/operate ensure=directory;
-				 puppet resource docker_image puppetclient33-image ensure=absent force=true
-
+				
 				#clone repo
 	             cd /tmp/operate;
 	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git;
