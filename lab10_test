@@ -3,29 +3,25 @@ pipeline {
 	  stages {
           stage('One') {
           steps {
-			script {
-                    // Remove existing QA image if it exists
-                    sh '''
-                    if docker images | grep -q puppetclient33-image; then
-                      echo "Removing existing QA image..."
-                      puppet resource docker_image puppetclient33-image ensure=absent force=true
-                    else
-                      echo "No existing QA image found."
-                    fi
-                    '''
+			 sh '''#!/bin/bash
+			
+			# Define variables
+			image_name="puppetclient33-image"
+			container_name="puppetclient33"
+			targets="puppetclient33.localdomain"
 
-                    // Build new QA image
-                    sh '''
-                    echo "Building new QA image..."
-                    docker build -t puppetclient33-image:latest -f Dockerfile.qa .
-                    '''
+			# Check if image exists
+			image_exist=$(docker images -q "$image_name")
 
-                    // Optionally tag with timestamp or version
-                    def timestamp = new Date().format("yyyyMMdd-HHmmss")
-                    sh "docker tag puppetclient33-image:latest puppetclient33-image:${timestamp}"
-                    echo "New QA image tagged as puppetclient33-image:${timestamp}"
-                }
-           
+			if (-n "$image_exist") {
+	  			echo "Removing existing image: $image_name"
+      			docker rmi -f "$image_name"
+			} else {
+      			echo "No existing image found. Creating new image..."
+	  			docker commit "$container_name" "$image_name"
+			}
+			'''
+			echo "puppetclient33-image checked"
           }
           }
           stage('Two') {
