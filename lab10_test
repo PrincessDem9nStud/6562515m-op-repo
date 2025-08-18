@@ -36,7 +36,7 @@ pipeline {
   		  stage('Four-33curl') {
           steps {
 			script {
-            	sh 'curl –Is http://localhost:3333|head –n 1 > /tmp/operate/results-file';
+            	sh 'curl -Is http://localhost:3333 | head -n 1 > /tmp/operate/results-01';
 			  }
           }
           }
