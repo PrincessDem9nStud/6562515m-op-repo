@@ -27,7 +27,7 @@ pipeline {
                  
 				#define varialbes
 				 targets=puppetclient.localdomain
-                 locate_script='/tmp/operate/script_to_run'
+                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run'
 
 				#run Bolt script
                  bolt script run "\$locate_script" -t "\$targets" -u svradm -p user123 --no-host-key-check --run-as root
