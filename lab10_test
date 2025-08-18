@@ -42,10 +42,16 @@ pipeline {
           }
           stage('Five') {
           steps {
-            input('Do you want to deploy to Production container?')
-                
+			script { 
+			def result = sh(script: 'cat /tmp/operate/result-01', returnStdout: true).trim()
+			if (result == 'HTTP/1.1 200 OK') {
+ 				echo "proceed to roll out to prod server"
+                } else {
+				echo "roll back to QA server"
+                }
           }
-          }
+		  }
+		  }
           stage('Six') {
           steps {
                  sh '''#!/bin/bash
