@@ -33,13 +33,24 @@ pipeline {
 				echo "UAT container updated"
           }
           }
-          stage('Four') {
+  		  stage('Four-33curl') {
+          steps {
+            sh '''#!/bin/bash
+		    #define varibles
+			targets=puppetclient33.localdomain;
+			curls='curl -ls http://localhost:3333 I head -n -l > /tmp/operate/result-file';
+			#run bolt task
+			bolt task run $curls -t $targets -u svradm -p user123 --no-host-key-check --run-as root
+            '''    
+          }
+          }
+          stage('Five') {
           steps {
             input('Do you want to deploy to Production container?')
                 
           }
           }
-          stage('Five') {
+          stage('Six') {
           steps {
                  sh '''#!/bin/bash
                  targets=puppetclient44.localdomain;
