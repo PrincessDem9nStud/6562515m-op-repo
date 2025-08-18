@@ -48,8 +48,8 @@ pipeline {
         		message: 'Proceed with rollout?',
         		parameters: [ 
 					choice(
-                	name: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
-					choices: ['Prod Server', 'QA Server', 'Abort'],
+                	name: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?',
+					choices: ['Prod Server', 'QA Server', 'Abort']
                 	)
         			]			
     				)		 		
