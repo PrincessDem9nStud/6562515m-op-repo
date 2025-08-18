@@ -13,26 +13,24 @@ pipeline {
           }
           stage('Three') {
           steps {
-                 sh """
-				 #!/bin/bash
-				 set -e
-
+                 sh "'#!/bin/bash
+				
 				#clean and recreate directory
-                 puppet resource file /tmp/operate ensure=absent force=true
-                 puppet resource file /tmp/operate ensure=directory
+                 puppet resource file /tmp/operate ensure=absent force=true;
+                 puppet resource file /tmp/operate ensure=directory;
 
 				#clone repo
-	             cd /tmp/operate
-	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git
+	             cd /tmp/operate;
+	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git;
                  
 				#define varialbes
-				 targets=puppetclient.localdomain
-                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run'
+				 targets=puppetclient.localdomain;
+                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
 
 				#run Bolt script
-                 bolt script run "\$locate_script" -t "\$targets" -u svradm -p user123 --no-host-key-check --run-as root
-"""
-                 echo "UAT container updated"
+                 bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
+				'"
+				echo "UAT container updated"
           }
           }
           stage('Four') {
