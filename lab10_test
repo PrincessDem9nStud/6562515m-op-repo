@@ -35,13 +35,9 @@ pipeline {
           }
   		  stage('Four-33curl') {
           steps {
-            sh '''#!/bin/bash
-		    #define varibles
-			targets=puppetclient33.localdomain;
-			curls='curl -Is http://localhost:3333 | head -n -l > /tmp/operate/result-file';
-			#run bolt task
-			bolt task run $curls -t $targets -u svradm -p user123 --no-host-key-check --run-as root
-            '''    
+			script {
+            	sh curls='curl –Is http://localhost:3333|head –n 1 > /tmp/operate/results-file || echo "Service unreachable"';
+			  }
           }
           }
           stage('Five') {
