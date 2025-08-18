@@ -3,7 +3,29 @@ pipeline {
 	  stages {
           stage('One') {
           steps {
-            echo 'Continue from previous phase: Ready to deploy next environment.'
+			script {
+                    // Remove existing QA image if it exists
+                    sh '''
+                    if docker images | grep -q puppetclient33-image; then
+                      echo "Removing existing QA image..."
+                      puppet resource docker_image puppetclient33-image ensure=absent force=true
+                    else
+                      echo "No existing QA image found."
+                    fi
+                    '''
+
+                    // Build new QA image
+                    sh '''
+                    echo "Building new QA image..."
+                    docker build -t puppetclient33-image:latest -f Dockerfile.qa .
+                    '''
+
+                    // Optionally tag with timestamp or version
+                    def timestamp = new Date().format("yyyyMMdd-HHmmss")
+                    sh "docker tag puppetclient33-image:latest puppetclient33-image:${timestamp}"
+                    echo "New QA image tagged as puppetclient33-image:${timestamp}"
+                }
+           
           }
           }
           stage('Two') {
@@ -18,6 +40,7 @@ pipeline {
 				#clean and recreate directory
                  puppet resource file /tmp/operate ensure=absent force=true;
                  puppet resource file /tmp/operate ensure=directory;
+				 puppet resource docker_image puppetclient33-image ensure=absent force=true
 
 				#clone repo
 	             cd /tmp/operate;
