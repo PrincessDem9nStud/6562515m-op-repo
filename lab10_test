@@ -3,32 +3,29 @@ pipeline {
 	  stages {
           stage('One -P1') {
           steps {
-			 sh '''#!/bin/bash
-			
-			# Define variables for part 1 of S1
-			image_name="puppetclient33-image"
-			container_name="puppetclient33"
-			targets="puppetclient33.localdomain"
-
-			# Check if image exists
-			image_exist=$(docker images -q "$image_name")
-
-			if (-n "$image_exist") {
-	  			echo "Removing existing image: $image_name"
-      			docker rmi -f "$image_name"
-			} else {
-      			echo "No existing image found. Creating new image..."docker!2
-
-	  			docker commit "$container_name" "$image_name"
-			}
-			'''
-			echo "puppetclient33-image checked"
+			echo "checkpoint - puppetclient33-image"
           }
           }
           stage('One -P2') {
           steps {
                  sh '''#!/bin/bash
-				
+
+				# Define variables for part 1 of S1
+				image_name="puppetclient33-image"
+				container_name="puppetclient33"
+				targets="puppetclient33.localdomain"
+
+				# Check if image exists
+				 
+				#clean and recreate docker images
+				if docker images | grep -q "$image_name"; then
+					puppet resource docker_image "$image_name" ensure=absent force=true;
+					echo "remove existing image";
+				else {	
+					puppet resource docker_image "$image_name" ensure=present;
+					echo "create new image";
+				fi
+
 				#clean and recreate directory
                  puppet resource file /tmp/operate ensure=absent force=true;
                  puppet resource file /tmp/operate ensure=directory;
