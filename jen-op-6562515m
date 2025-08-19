@@ -48,7 +48,6 @@ pipeline {
           }
           stage('Op-6562515m-S3 choice') {
           steps {
-			#choice selection and curl test results
 			script { 
 			   def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
 				def v1 = input(
