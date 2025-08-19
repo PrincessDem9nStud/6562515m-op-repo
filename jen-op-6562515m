@@ -48,11 +48,9 @@ pipeline {
           }
           stage('Op-6562515m-S3 choice') {
           steps {
+			#choice selection and curl test results
 			script { 
-			
 			   def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
-			
-				#choice selection and curl test results
 				def v1 = input(
         		message: 'Proceed with rollout to Prod server or Roll back?',
         		parameters: [choice(name:' ', choices: ['Prod Server', 'QA Server'])]			
