@@ -31,7 +31,7 @@ pipeline {
                  
 				#define variable for part 2 of S1
 				 targets=6562515m-qa-svr.localdomain;
-                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
+                 locate_script='/tmp/operate/6562515m-op-repo/6562515m_script';
 
 				#run Bolt script to update new index.html
                  bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
@@ -82,7 +82,7 @@ pipeline {
                
 				#define variables for part 2 of S4
 				 targets=6562515m-prod-svr.localdomain;
-                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
+                 locate_script='/tmp/operate/6562515m-op-repo/6562515m_script';
 
 				#run Bolt script
                  bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
