@@ -50,11 +50,9 @@ pipeline {
           steps {
 			script { 
 			
-			#extract the result from the curl test
-			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
+			   def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
 			
-				#choice selection and curl test results to determine
-				#if the stage will proceed or abort
+				#choice selection and curl test results
 				def v1 = input(
         		message: 'Proceed with rollout to Prod server or Roll back?',
         		parameters: [choice(name:' ', choices: ['Prod Server', 'QA Server'])]			
