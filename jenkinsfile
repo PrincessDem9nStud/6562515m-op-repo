@@ -1,73 +1,127 @@
 pipeline {
       agent any
-		parameters {
-    	choice(
-      	name: 'ROLL_OUT_S3',
-      	choices: ['Prod Server', 'QA Server', 'Abort'],
-      	description: 'Proceed to Roll out to Prod Server or Roll Back to QA Server?'
-    	)
-       choice(
-       name: 'RELEASE_TO_S6',
-       choices: ['Release', 'Rollback', 'Abort'],
-       description: 'Proceed to release Prod web server to production or roll back?'
-       )
-       }	
-      stages {
-          stage('One') {
+	  tools {
+		git 'Default'
+		}
+	  stages {
+          stage('S1') {
           steps {
-         	//remove qa backup image then create a new image called qa-bkup-image
-			//update the qa server by doing a bolt script run 
-			//to update QA web server with the new html format (req#3)
-			echo 'Op-6562515m-S1: QA web server is backup and updated'
+                 sh '''#!/bin/bash
+
+				# Define variables for part 1 of S1
+				image_name="puppetclient33-image"
+				container_name="puppetclient33"
+							 
+				#clean and recreate docker images
+				if docker images | grep -q "$image_name"; then
+					puppet resource docker_image "$image_name" ensure=absent force=true;
+					echo "remove existing image";
+				else 
+					puppet resource docker_image "$image_name" ensure=present;
+					echo "create new image";
+				fi
+
+				#clean and recreate directory
+                 puppet resource file /tmp/operate ensure=absent force=true;
+                 puppet resource file /tmp/operate ensure=directory;
+				
+				#clone repo
+	             cd /tmp/operate;
+	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git;
+                 
+				#define varialbes
+				 targets=puppetclient33.localdomain;
+                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
+
+				#run Bolt script
+                 bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
+				'''
+				echo "QA web server updated"
           }
           }
-          stage('Two') {
+		stage('CKPT') {
           steps {
-			//execute the curl test (req#4)
-		 	echo "Op-6562515m-S2: Checking on whether QA server is running after update"       
+            echo "CHECKPOINT"
           }
-          }
-          stage('Three') {
+          }	
+  		  stage('S2 - CURL') {
           steps {
-			//Set options, choose between proceed to roll out PROD or roll back to QA
-			//if rollback, must execute rollback by using the qa-bkup-image
-			script{
-			if (params.ROLL_OUT_S3 == 'Abort') {
-			error("QA server fails after update and is rolled back")
-			}
-			echo "selected action: ${params.ROLL_OUT_S3}"
-			} 
+			script {
+            	sh 'curl -Is http://localhost:3333 | head -n 1 > /tmp/operate/results-01';
+			  }
           }
           }
-          stage('Four') {
+          stage('S3 choice') {
           steps {
-			//remove any prod backup image and create a new image called prod-bkup-image
-			//update prod server by executing bolt run just like stage 1
-			echo "Op-6562515m-S4: Prod web server is backup and updated"        
+			script { 
+			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
+				def v1 = input(
+        		message: 'Proceed with rollout to Prod server or Roll back?',
+        		parameters: [choice(name:' ', choices: ['Prod Server', 'QA Server'])]			
+    				)		 		
+					if ((result == 'HTTP/1.1 200 OK') && (v1 == 'Prod Server')) {
+						echo "proceed to roll out to prod server"
+					} else if (v1 == 'QA Server') {
+						echo "roll back to QA server"
+						error("Aborting")
+					}			
           }
-          }
-          stage('Five') {
+		  }
+		  }
+		  stage('S4') {
           steps {
-			//execute the curl test (req#4)
-			echo 'Op-6562515m-S5: Checking on whether PROD server is running after update'
+                 sh '''#!/bin/bash
+
+				# Define variables for part 1 of S4
+				image_name="puppetclient44-image"
+				container_name="puppetclient44"
+							 
+				#clean and recreate docker images
+				if docker images | grep -q "$image_name"; then
+					puppet resource docker_image "$image_name" ensure=absent force=true;
+					echo "remove existing image";
+				else 
+					puppet resource docker_image "$image_name" ensure=present;
+					echo "create new image";
+				fi
+               
+				#define varialbes
+				 targets=puppetclient44.localdomain;
+                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
+
+				#run Bolt script
+                 bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
+				'''
+				echo "PROD web server is backup and updated"
           }
           }
-		  stage('Six') {
+		  stage('S5 - CURL') {
           steps {
-			//Set options, choose between proceed to release prod web server or roll back
-			//if rollback, must execute rollback by using the prod-bkup-image
-			script{
-			if (params.RELEASE_TO_S6 == 'Abort'){
-			error("Prod web server is rolled back")
-			}
-			echo "selected action: ${params.RELEASE_TO_S6}"
-			}
+			script {
+            	sh 'curl -Is http://localhost:3344 | head -n 1 > /tmp/operate/results-02';
+			  }
           }
           }
-          stage('Seven - Last') {
+		  stage('S6 choice') {
           steps {
-			//last stage
-            echo 'LAST Prod Web server is monitored and ready to serve'
+			script { 
+			def result = sh(script: 'cat /tmp/operate/results-02', returnStdout: true).trim()
+				def v2 = input(
+        		message: 'Proceed to release to Prod web server to production or Roll back ti Prod web?',
+        		parameters: [choice(name:' ', choices: ['Release', 'Rollback'])]			
+    				)		 		
+					if ((result == 'HTTP/1.1 200 OK') && (v2 == 'Release')) {
+						echo "proceed to release Prod web server to production"
+					} else if (v2 == 'Rollback') {
+						echo "Roll back Prod web server"
+						error("Aborting")
+					}			
+          }
+		  }
+		  }
+		  stage('S7') {
+          steps {
+            echo '6562515m-S7: Prod web server is monitored and ready to serve'
           }
           }
       }
