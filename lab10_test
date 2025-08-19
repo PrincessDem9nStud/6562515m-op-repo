@@ -1,11 +1,11 @@
 pipeline {
       agent any
 	  stages {
-          stage('One') {
+          stage('One -P1') {
           steps {
 			 sh '''#!/bin/bash
 			
-			# Define variables
+			# Define variables for part 1 of S1
 			image_name="puppetclient33-image"
 			container_name="puppetclient33"
 			targets="puppetclient33.localdomain"
@@ -17,19 +17,15 @@ pipeline {
 	  			echo "Removing existing image: $image_name"
       			docker rmi -f "$image_name"
 			} else {
-      			echo "No existing image found. Creating new image..."
+      			echo "No existing image found. Creating new image..."docker!2
+
 	  			docker commit "$container_name" "$image_name"
 			}
 			'''
 			echo "puppetclient33-image checked"
           }
           }
-          stage('Two') {
-          steps {
-            input('Do you want to update to UAT container?')
-          }
-          }
-          stage('Three') {
+          stage('One -P2') {
           steps {
                  sh '''#!/bin/bash
 				
@@ -48,17 +44,22 @@ pipeline {
 				#run Bolt script
                  bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
 				'''
-				echo "UAT container updated"
+				echo "QA web server updated"
           }
           }
-  		  stage('Four-33curl') {
+		stage('Two - B') {
+          steps {
+            echo "Adding a break"
+          }
+          }	
+  		  stage('Two - 33curl') {
           steps {
 			script {
             	sh 'curl -Is http://localhost:3333 | head -n 1 > /tmp/operate/results-01';
 			  }
           }
           }
-          stage('Five - choice') {
+          stage('Three - choice') {
           steps {
 			script { 
 			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
