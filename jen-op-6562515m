@@ -4,13 +4,13 @@ pipeline {
 		git 'Default'
 		}
 	  stages {
-          stage('S1') {
+          stage('Op-6562515m-S1') {
           steps {
                  sh '''#!/bin/bash
 
 				# Define variables for part 1 of S1
-				image_name="puppetclient33-image"
-				container_name="puppetclient33"
+				image_name="qa_bkup_image"
+				container_name="6562515m-qa-svr"
 							 
 				#clean and recreate docker images
 				if docker images | grep -q "$image_name"; then
@@ -29,32 +29,33 @@ pipeline {
 	             cd /tmp/operate;
 	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git;
                  
-				#define varialbes
-				 targets=puppetclient33.localdomain;
+				#define variable for part 2 of S1
+				 targets=6562515m-qa-svr.localdomain;
                  locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
 
-				#run Bolt script
+				#run Bolt script to update new index.html
                  bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
 				'''
-				echo "QA web server updated"
+				echo "QA web server is backup and updated"
           }
           }
-		stage('CKPT') {
-          steps {
-            echo "CHECKPOINT"
-          }
-          }	
-  		  stage('S2 - CURL') {
+		 stage('Op-6562515m-S2 CURL') {
           steps {
 			script {
-            	sh 'curl -Is http://localhost:3333 | head -n 1 > /tmp/operate/results-01';
+				#execute the curl test on QA web server
+            	sh 'curl -Is http://localhost:33200 | head -n 1 > /tmp/operate/results-01';
 			  }
           }
           }
-          stage('S3 choice') {
+          stage('Op-6562515m-S3 choice') {
           steps {
 			script { 
+			
+			#extract the result from the curl test
 			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
+			
+				#choice selection and curl test results to determine
+				#if the stage will proceed or abort
 				def v1 = input(
         		message: 'Proceed with rollout to Prod server or Roll back?',
         		parameters: [choice(name:' ', choices: ['Prod Server', 'QA Server'])]			
@@ -68,13 +69,13 @@ pipeline {
           }
 		  }
 		  }
-		  stage('S4') {
+		  stage('Op-6562515m-S4') {
           steps {
                  sh '''#!/bin/bash
 
 				# Define variables for part 1 of S4
-				image_name="puppetclient44-image"
-				container_name="puppetclient44"
+				image_name="prod_bkup_image"
+				container_name="6562515m-prod-svr"
 							 
 				#clean and recreate docker images
 				if docker images | grep -q "$image_name"; then
@@ -85,8 +86,8 @@ pipeline {
 					echo "create new image";
 				fi
                
-				#define varialbes
-				 targets=puppetclient44.localdomain;
+				#define variables for part 2 of S4
+				 targets=6562515m-prod-svr.localdomain;
                  locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
 
 				#run Bolt script
@@ -95,14 +96,14 @@ pipeline {
 				echo "PROD web server is backup and updated"
           }
           }
-		  stage('S5 - CURL') {
+		  stage('Op-6562515m-S5 - CURL') {
           steps {
 			script {
-            	sh 'curl -Is http://localhost:3344 | head -n 1 > /tmp/operate/results-02';
+            	sh 'curl -Is http://localhost:33500 | head -n 1 > /tmp/operate/results-02';
 			  }
           }
           }
-		  stage('S6 choice') {
+		  stage('Op-6562515m-S6 choice') {
           steps {
 			script { 
 			def result = sh(script: 'cat /tmp/operate/results-02', returnStdout: true).trim()
@@ -119,7 +120,7 @@ pipeline {
           }
 		  }
 		  }
-		  stage('S7') {
+		  stage('Op-6562515m-S7') {
           steps {
             echo '6562515m-S7: Prod web server is monitored and ready to serve'
           }
