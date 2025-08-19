@@ -39,14 +39,14 @@ pipeline {
 				echo "QA web server is backup and updated"
           }
           }
-		 stage('Op-6562515m-S2 CURL') {
+		 stage('Op-6562515m-S2') {
           steps {
 			script {
 				sh 'curl -Is http://localhost:33200 | head -n 1 > /tmp/operate/results-01';
 			  }
           }
           }
-          stage('Op-6562515m-S3 choice') {
+          stage('Op-6562515m-S3') {
           steps {
 			script { 
 			   def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
@@ -90,14 +90,14 @@ pipeline {
 				echo "PROD web server is backup and updated"
           }
           }
-		  stage('Op-6562515m-S5 - CURL') {
+		  stage('Op-6562515m-S5') {
           steps {
 			script {
             	sh 'curl -Is http://localhost:33500 | head -n 1 > /tmp/operate/results-02';
 			  }
           }
           }
-		  stage('Op-6562515m-S6 choice') {
+		  stage('Op-6562515m-S6') {
           steps {
 			script { 
 			def result = sh(script: 'cat /tmp/operate/results-02', returnStdout: true).trim()
