@@ -1,5 +1,8 @@
 pipeline {
       agent any
+	  tools {
+		git 'Default'
+		}
 	  stages {
           stage('One -P1') {
           steps {
@@ -16,13 +19,13 @@ pipeline {
 				targets="puppetclient33.localdomain"
 			 
 				#clean and recreate docker images
-				if (docker images | grep -q "$image_name") {
+				if docker images | grep -q "$image_name"; then
 					puppet resource docker_image "$image_name" ensure=absent force=true;
 					echo "remove existing image";
-				} else {
+				else 
 					puppet resource docker_image "$image_name" ensure=present;
 					echo "create new image";
-				}
+				fi
 
 				#clean and recreate directory
                  puppet resource file /tmp/operate ensure=absent force=true;
