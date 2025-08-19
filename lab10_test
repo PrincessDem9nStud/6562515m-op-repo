@@ -14,9 +14,7 @@ pipeline {
 				image_name="puppetclient33-image"
 				container_name="puppetclient33"
 				targets="puppetclient33.localdomain"
-
-				# Check if image exists
-				 
+			 
 				#clean and recreate docker images
 				if docker images | grep -q "$image_name"; then
 					puppet resource docker_image "$image_name" ensure=absent force=true;
