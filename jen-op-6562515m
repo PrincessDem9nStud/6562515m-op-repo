@@ -1,0 +1,128 @@
+pipeline {
+      agent any
+	  tools {
+		git 'Default'
+		}
+	  stages {
+          stage('S1') {
+          steps {
+                 sh '''#!/bin/bash
+
+				# Define variables for part 1 of S1
+				image_name="puppetclient33-image"
+				container_name="puppetclient33"
+							 
+				#clean and recreate docker images
+				if docker images | grep -q "$image_name"; then
+					puppet resource docker_image "$image_name" ensure=absent force=true;
+					echo "remove existing image";
+				else 
+					puppet resource docker_image "$image_name" ensure=present;
+					echo "create new image";
+				fi
+
+				#clean and recreate directory
+                 puppet resource file /tmp/operate ensure=absent force=true;
+                 puppet resource file /tmp/operate ensure=directory;
+				
+				#clone repo
+	             cd /tmp/operate;
+	             git clone https://github.com/PrincessDem9nStud/6562515m-op-repo.git;
+                 
+				#define varialbes
+				 targets=puppetclient33.localdomain;
+                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
+
+				#run Bolt script
+                 bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
+				'''
+				echo "QA web server updated"
+          }
+          }
+		stage('CKPT') {
+          steps {
+            echo "CHECKPOINT"
+          }
+          }	
+  		  stage('S2 - CURL') {
+          steps {
+			script {
+            	sh 'curl -Is http://localhost:3333 | head -n 1 > /tmp/operate/results-01';
+			  }
+          }
+          }
+          stage('S3 choice') {
+          steps {
+			script { 
+			def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
+				def v1 = input(
+        		message: 'Proceed with rollout to Prod server or Roll back?',
+        		parameters: [choice(name:' ', choices: ['Prod Server', 'QA Server'])]			
+    				)		 		
+					if ((result == 'HTTP/1.1 200 OK') && (v1 == 'Prod Server')) {
+						echo "proceed to roll out to prod server"
+					} else if (v1 == 'QA Server') {
+						echo "roll back to QA server"
+						error("Aborting")
+					}			
+          }
+		  }
+		  }
+		  stage('S4') {
+          steps {
+                 sh '''#!/bin/bash
+
+				# Define variables for part 1 of S4
+				image_name="puppetclient44-image"
+				container_name="puppetclient44"
+							 
+				#clean and recreate docker images
+				if docker images | grep -q "$image_name"; then
+					puppet resource docker_image "$image_name" ensure=absent force=true;
+					echo "remove existing image";
+				else 
+					puppet resource docker_image "$image_name" ensure=present;
+					echo "create new image";
+				fi
+               
+				#define varialbes
+				 targets=puppetclient44.localdomain;
+                 locate_script='/tmp/operate/6562515m-op-repo/script_to_run';
+
+				#run Bolt script
+                 bolt script run $locate_script -t $targets -u svradm -p user123 --no-host-key-check --run-as root
+				'''
+				echo "PROD web server is backup and updated"
+          }
+          }
+		  stage('S5 - CURL') {
+          steps {
+			script {
+            	sh 'curl -Is http://localhost:3344 | head -n 1 > /tmp/operate/results-02';
+			  }
+          }
+          }
+		  stage('S6 choice') {
+          steps {
+			script { 
+			def result = sh(script: 'cat /tmp/operate/results-02', returnStdout: true).trim()
+				def v2 = input(
+        		message: 'Proceed to release to Prod web server to production or Roll back ti Prod web?',
+        		parameters: [choice(name:' ', choices: ['Release', 'Rollback'])]			
+    				)		 		
+					if ((result == 'HTTP/1.1 200 OK') && (v2 == 'Release')) {
+						echo "proceed to release Prod web server to production"
+					} else if (v2 == 'Rollback') {
+						echo "Roll back Prod web server"
+						error("Aborting")
+					}			
+          }
+		  }
+		  }
+		  stage('S7') {
+          steps {
+            echo '6562515m-S7: Prod web server is monitored and ready to serve'
+          }
+          }
+      }
+}
