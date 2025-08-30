@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "hello" > /tmp/operate/rollback_log
