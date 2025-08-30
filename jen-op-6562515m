@@ -58,7 +58,6 @@ pipeline {
 					if ((result == 'HTTP/1.1 200 OK') && (v1 == 'Rollout to Prod Server')) {
 						echo "Op-6562515m-S3: proceed to roll out to prod server"
 					} else if (v1 == 'Rollback to QA Server') {
-					sh 'bolt script run "/tmp/operate/script_rollback" -t 6562515m-qa-svr -u svradm -p user123 --no-host-key-check --run-as root';
 						echo "Op-6562515m-S3: QA server fails after update and is rolled back"
 						error("Aborting")
 					}			
@@ -103,8 +102,6 @@ pipeline {
 		  stage('Op-6562515m-S6') {
           steps {
 			script { 
-			def targets = '6562515m-prod-svr.localdomain'
-			def locate_scriptR = '/tmp/operate/6562515m-op-repo/script_rollback'
 			def result = sh(script: 'cat /tmp/operate/results-02', returnStdout: true).trim()
 				def v2 = input(
         		message: 'Proceed to release to Prod web server to production or Roll back to Prod web server?',
@@ -113,7 +110,6 @@ pipeline {
 					if ((result == 'HTTP/1.1 200 OK') && (v2 == 'Release Prod Web')) {
 						echo "Op-6562515m-S6: proceed to release Prod web server to production"
 					} else if (v2 == 'Rollback Prod Web') {
-					sh 'bolt script run ${locate_scriptR} -t ${targets} -u svradm -p user123 --no-host-key-check --run-as root'
 						echo "Op-6562515m-S6: Roll back Prod web server"
 						error("Aborting")
 					}			
