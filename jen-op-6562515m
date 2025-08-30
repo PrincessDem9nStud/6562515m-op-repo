@@ -59,7 +59,7 @@ pipeline {
 					if ((result == 'HTTP/1.1 200 OK') && (v1 == 'Rollout to Prod Server')) {
 						echo "Op-6562515m-S3: proceed to roll out to prod server"
 					} else if (v1 == 'Rollback to QA Server') {
-					sh 'bolt script run "tmp/operate/6562515m-op-repo/script_rollback -t $targets -u svradm -p user123 --no-host-key-check --run-as root'
+					sh 'bolt script run "/tmp/operate/6562515m-op-repo/script_rollback" -t $targets -u svradm -p user123 --no-host-key-check --run-as root'
 						echo "Op-6562515m-S3: QA server fails after update and is rolled back"
 						error("Aborting")
 					}			
