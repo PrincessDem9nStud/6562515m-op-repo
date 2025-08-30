@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "hello" > /tmp/operate/rollback_log
+touch /tmp/operate/rollback_log
