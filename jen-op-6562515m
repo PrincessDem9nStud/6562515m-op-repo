@@ -51,7 +51,7 @@ pipeline {
           steps {
 			script { 
 				def targets=6562515m-qa-svr.localdomain;
-                def locate_scriptR='/tmp/operate/6562515m-op-repo/6562515m_script'
+                def locate_scriptR='/tmp/operate/6562515m-op-repo/script_rollback'
 			    def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
 				def v1 = input(
         		message: 'Proceed with rollout to Prod server or Roll back QA server?',
