@@ -1,2 +1,2 @@
 #!/bin/bash
-touch /tmp/rollbackQA_log
+cp /usr/share/apache2/default-site/index.html /var/www/html/index.html
