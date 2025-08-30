@@ -42,28 +42,35 @@ pipeline {
 		 stage('Op-6562515m-S2') {
           steps {
 			script {
-				sh 'curl -Is http://localhost:33200 | head -n 1 > /tmp/operate/results-01';
+				sh 'curl -Is http://localhost:33200 | head -n 1 > /tmp/qa-result-file';
 				echo "Op-6562515m-S2: Checking on whether QA server is running after update"
 			  }
           }
           }
-          stage('Op-6562515m-S3') {
-          steps {
-			script { 
-				def result = sh(script: 'cat /tmp/operate/results-01', returnStdout: true).trim()
-				def v1 = input(
-        		message: 'Proceed with rollout to Prod server or Roll back QA server?',
-        		parameters: [choice(name:' ', choices: ['Rollout to Prod Server', 'Rollback to QA Server'])]			
-    				)		 		
-					if ((result == 'HTTP/1.1 200 OK') && (v1 == 'Rollout to Prod Server')) {
-						echo "Op-6562515m-S3: proceed to roll out to prod server"
-					} else if (v1 == 'Rollback to QA Server') {
-						echo "Op-6562515m-S3: QA server fails after update and is rolled back"
-						error("Aborting")
-					}			
-          }
-		  }
-		  }
+      stage('Op-6562515m-S3') {
+    		steps {
+        	script {
+            def result = sh(script: 'cat /tmp/qa-result-file', returnStdout: true).trim()
+            def v1 = input(
+                message: 'Proceed with rollout to Prod server or Roll back QA server?',
+                parameters: [choice(name: 'Action', choices: ['Rollout to Prod Server', 'Rollback to QA Server'])]
+            )
+
+            def targets = '6562515m-qa-svr.localdomain'
+            def locate_scriptQA = '/tmp/operate/6562515m-op-repo/rollbackQA_script'
+
+            if (result == 'HTTP/1.1 200 OK' && v1 == 'Rollout to Prod Server') {
+                echo "Op-6562515m-S3: proceed to roll out to prod server"
+            } else if (v1 == 'Rollback to QA Server') {
+                sh """
+                    bolt script run ${locate_scriptQA} -t ${targets} -u svradm -p user123 --no-host-key-check --run-as root
+                """
+                echo "Op-6562515m-S3: QA server fails after update and is rolled back"
+                error("Aborting")
+            }
+        }
+    }
+}
 		  stage('Op-6562515m-S4') {
           steps {
                  sh '''#!/bin/bash
@@ -94,7 +101,7 @@ pipeline {
 		  stage('Op-6562515m-S5') {
           steps {
 			script {
-            	sh 'curl -Is http://localhost:33500 | head -n 1 > /tmp/operate/results-02';
+            	sh 'curl -Is http://localhost:33500 | head -n 1 > /tmp/prod-result-file';
 				echo "Op-6562515m-S5: Checking on whether Prod server is running after update"
 			  }
           }
@@ -102,7 +109,7 @@ pipeline {
 		  stage('Op-6562515m-S6') {
           steps {
 			script { 
-			def result = sh(script: 'cat /tmp/operate/results-02', returnStdout: true).trim()
+			def result = sh(script: 'cat /tmp/prod-result-file', returnStdout: true).trim()
 				def v2 = input(
         		message: 'Proceed to release to Prod web server to production or Roll back to Prod web server?',
         		parameters: [choice(name:' ', choices: ['Release Prod Web', 'Rollback Prod Web'])]			
