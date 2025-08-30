@@ -127,7 +127,7 @@ pipeline {
                 echo "Op-6562515m-S6: Rolled back Prod web server"
                 error("Aborting")
                 
-            	} else if (result == 'HTTP/1.1 200 OK' && v1 == 'Rollout to Prod Server'){
+            	} else if (result == 'HTTP/1.1 200 OK' && v2 == 'Release Prod Web'){
 				echo "Op-6562515m-S6: proceed to release Prod web server to production"
 		   			}
         		}
