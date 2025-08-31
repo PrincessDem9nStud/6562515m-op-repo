@@ -1,1 +1,4 @@
-sh!/bin/bash
+#!/bin/bash
+docker stop puppetclient1
+docker rm puppetclient1
+docker run -d  -it --network customnetwork --privileged -h puppetclient33.localdomain --name puppetclient33  --add-host=sddo-vm.localdomain:172.20.113.127  --ip=192.168.100.33 -p 3333:80 --mount source=my-volume,target=/mnt/my-volume puppetclient-image /sbin/init
