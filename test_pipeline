@@ -14,12 +14,12 @@ pipeline {
                 parameters: [choice(name: 'Action', choices: ['Rollout', 'Rollback'])]
             )
 
-            def targets = 'puppetclient33.localdomain'
+            def targets = 'puppetclient44.localdomain'
             def locate_script = '/tmp/testscript/rollback_test'
 
             if (v1 == 'Rollback') {
                 sh """
-                    bolt script run ${locate_script} -t ${targets} --u root -p docker!2  --run-as root --no-host-key-check 
+                    bolt script run ${locate_script} -t ${targets} --run-as root --no-host-key-check 
                 """
                 echo "Rollback completes"
                 error("Aborting")
