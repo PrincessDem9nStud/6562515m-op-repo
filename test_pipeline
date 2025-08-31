@@ -19,7 +19,7 @@ pipeline {
 
             if (v1 == 'Rollback') {
                 sh """
-                    bolt script run ${locate_script} -t ${targets} --no-host-key-check --run-as root
+                    bolt script run ${locate_script} -t ${targets} --run-as root
                 """
                 echo "Rollback completes"
                 error("Aborting")
