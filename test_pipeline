@@ -24,7 +24,7 @@ pipeline {
                 echo "Rollback completes"
                 error("Aborting")
                 
-            } else if (v1 == 'Rollout to Prod Server'){
+            } else if (v1 == 'Rollout'){
 				echo "proceed to roll out to prod server"
 		   }
         }
