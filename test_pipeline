@@ -1,0 +1,40 @@
+pipeline {
+  agent any
+  stages {
+    stage('s1 - echo') {
+      steps {
+            echo 'Prod web server is monitored and ready to serve'
+          }
+    }
+  stage('s2 - rollback') {
+  steps {
+        	script {
+               def v1 = input(
+                message: 'Proceed with rollout to Prod server or Roll back QA server?',
+                parameters: [choice(name: 'Action', choices: ['Rollout', 'Rollback'])]
+            )
+
+            def targets = 'puppetclient33.localdomain'
+            def locate_script = '/tmp/testscript/rollback_test'
+
+            if (v1 == 'Rollback') {
+                sh """
+                    bolt script run ${locate_script} -t ${targets} --no-host-key-check --run-as root
+                """
+                echo "Rollback completes"
+                error("Aborting")
+                
+            } else if (v1 == 'Rollout to Prod Server'){
+				echo "proceed to roll out to prod server"
+		   }
+        }
+    }
+}
+    stage('s3 - echo') {
+      steps {
+            echo 'End of pipeline'
+          }
+    }
+}
+}
+  
